@@ -4,26 +4,50 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videoplayer.model.Video
+import com.example.videoplayer.viewmodel.VideoViewModel
 
 class VideoListFragment : Fragment() {
 
     private lateinit var videoAdapter: VideoAdapter
-    private var categoryName: String? = null
+    // Shared ViewModel with Activity ensures data persistence during fragment swaps
+    private val viewModel: VideoViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Get the category name passed from MainActivity
-        categoryName = arguments?.getString("ARG_CATEGORY")
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_video_list, container, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_video_list, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val loadingBar = view.findViewById<ProgressBar>(R.id.loadingBar)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.videoRecyclerView)
+
         setupRecyclerView(view)
-        return view
+
+        // 1. Get the category name passed from the Bundle
+        val category = arguments?.getString("ARG_CATEGORY") ?: "All"
+
+        // 2. TRIGGER THE DATA FETCH (This removes your "never used" warning)
+        viewModel.fetchVideosByCategory(category)
+
+        // 3. Observe the Loading State for the loader
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            loadingBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
+
+        // 4. Observe the Video Data
+        viewModel.videos.observe(viewLifecycleOwner) { videoList ->
+            videoAdapter.submitList(videoList)
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -32,31 +56,17 @@ class VideoListFragment : Fragment() {
             (activity as? MainActivity)?.openVideoPlayer(video)
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = videoAdapter
-
-        // --- DYNAMIC DATA LOGIC ---
-        val dummyVideos = List(10) { index ->
-            Video(
-                "$index",
-                "$categoryName Video #$index", // Title now reflects the category!
-                "Channel $categoryName",
-                "${(10..999).random()}K",
-                "${index + 1}d",
-                android.R.drawable.ic_menu_gallery,
-                android.R.drawable.ic_menu_compass
-            )
-        }
-        videoAdapter.submitList(dummyVideos)
     }
 
     companion object {
         fun newInstance(category: String): VideoListFragment {
-            val fragment = VideoListFragment()
-            val args = Bundle()
-            args.putString("ARG_CATEGORY", category)
-            fragment.arguments = args
-            return fragment
+            return VideoListFragment().apply {
+                arguments = Bundle().apply {
+                    putString("ARG_CATEGORY", category)
+                }
+            }
         }
     }
 }
