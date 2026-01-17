@@ -12,10 +12,16 @@ import com.example.videoplayer.model.Video
 class VideoListFragment : Fragment() {
 
     private lateinit var videoAdapter: VideoAdapter
+    private var categoryName: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Get the category name passed from MainActivity
+        categoryName = arguments?.getString("ARG_CATEGORY")
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_video_list, container, false)
-
         setupRecyclerView(view)
         return view
     }
@@ -23,25 +29,34 @@ class VideoListFragment : Fragment() {
     private fun setupRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.videoRecyclerView)
         videoAdapter = VideoAdapter { video ->
-            // This is where the Bottom Sheet will be triggered
             (activity as? MainActivity)?.openVideoPlayer(video)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = videoAdapter
 
-        // Dummy data for visual testing
-        val dummyVideos = List(10) {
+        // --- DYNAMIC DATA LOGIC ---
+        val dummyVideos = List(10) { index ->
             Video(
-                "1",
-                "How to build a Beautiful App",
-                "DesignCode",
-                "500K",
-                "1d",
+                "$index",
+                "$categoryName Video #$index", // Title now reflects the category!
+                "Channel $categoryName",
+                "${(10..999).random()}K",
+                "${index + 1}d",
                 android.R.drawable.ic_menu_gallery,
                 android.R.drawable.ic_menu_compass
             )
         }
         videoAdapter.submitList(dummyVideos)
+    }
+
+    companion object {
+        fun newInstance(category: String): VideoListFragment {
+            val fragment = VideoListFragment()
+            val args = Bundle()
+            args.putString("ARG_CATEGORY", category)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

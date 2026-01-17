@@ -46,6 +46,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--    <include layout="@layout/layout_video_bottom_sheet" />-->
+    <include layout="@layout/layout_video_bottom_sheet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
