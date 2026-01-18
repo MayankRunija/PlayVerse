@@ -14,7 +14,6 @@ object NetworkModule {
         .addInterceptor(logging)
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                // This makes the server think the request is coming from a real browser
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
                 .header("Accept", "application/json")
                 .build()

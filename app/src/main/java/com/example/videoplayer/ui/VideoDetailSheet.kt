@@ -14,20 +14,17 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 class VideoDetailSheet(
-    private val sheetView: View, // This is the 'bottomSheetInclude' from MainActivity
+    private val sheetView: View,
     private val viewModel: PlayerViewModel,
     lifecycleOwner: LifecycleOwner
 ) {
     private val behavior = BottomSheetBehavior.from(sheetView)
-
-    // Use sheetView.findViewById to ensure we are looking inside the sheet!
     private val titleView: TextView = sheetView.findViewById(R.id.sheetVideoTitle)
     private val descView: TextView = sheetView.findViewById(R.id.sheetVideoDesc)
     private val channelNameView: TextView = sheetView.findViewById(R.id.sheetChannelName)
     private val youtubePlayerView: YouTubePlayerView = sheetView.findViewById(R.id.youtube_player_view)
     private var activePlayer: YouTubePlayer? = null
     init {
-        // Essential: Keeps player in sync with Activity/Fragment lifecycle
         lifecycleOwner.lifecycle.addObserver(youtubePlayerView)
 
         viewModel.selectedVideo.observe(lifecycleOwner) { video ->
@@ -41,7 +38,7 @@ class VideoDetailSheet(
             behavior.state = if (isExpanded) {
                 BottomSheetBehavior.STATE_EXPANDED
             } else {
-                activePlayer?.pause() // Stop audio when hidden
+                activePlayer?.pause()
                 BottomSheetBehavior.STATE_HIDDEN
             }
         }
@@ -59,7 +56,7 @@ class VideoDetailSheet(
 
     private fun bindVideoData(video: Video) {
         titleView.text = video.title
-        descView.text = "${video.viewCountText} • ${video.publishedText}"
+        descView.text = "${video.publishedText}"
         channelNameView.text = video.author
     }
 
@@ -70,9 +67,8 @@ class VideoDetailSheet(
             val options = IFramePlayerOptions.Builder()
                 .controls(1)
                 .fullscreen(0)
-                // Add these two to help bypass some embedding restrictions
-                .rel(0) // Don't show related videos from other channels
-                .ivLoadPolicy(3) // Hide video annotations
+                .rel(0)
+                .ivLoadPolicy(3)
                 .build()
 
             youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {

@@ -16,16 +16,12 @@ class SplashActivity : AppCompatActivity() {
 
         val animationView = findViewById<LottieAnimationView>(R.id.lottieAnimation)
 
-        // Listen for the end of the animation
         animationView.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {}
 
             override fun onAnimationEnd(animation: Animator) {
-                // Move to MainActivity
                 val intent = Intent(this@SplashActivity, MainActivity::class.java)
                 startActivity(intent)
-
-                // Add a smooth fade transition
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 finish()
             }

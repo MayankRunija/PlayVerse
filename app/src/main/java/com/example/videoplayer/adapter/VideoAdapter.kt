@@ -31,9 +31,8 @@ class VideoAdapter(private val onVideoClick: (Video) -> Unit) :
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val video = videos[position]
         holder.title.text = video.title
-        holder.meta.text = "${video.author} • ${video.viewCountText} • ${video.publishedText}"
+        holder.meta.text = "${video.author} • ${video.publishedText}"
 
-        // FIX: Use video.thumbnailUrl directly
         Glide.with(holder.itemView.context)
             .load(video.thumbnailUrl)
             .placeholder(Color.BLACK)

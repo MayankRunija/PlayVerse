@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,10 +17,8 @@ class VideoListFragment : Fragment() {
 
     private lateinit var videoAdapter: VideoAdapter
 
-    // Shared Data ViewModel (for the list)
     private val videoViewModel: VideoViewModel by activityViewModels()
 
-    // Shared Player ViewModel (to trigger the bottom sheet)
     private val playerViewModel: PlayerViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -39,7 +36,6 @@ class VideoListFragment : Fragment() {
         val category = arguments?.getString("ARG_CATEGORY") ?: "All"
         videoViewModel.fetchVideosByCategory(category)
 
-        // Observe the Loading State
         videoViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             val shimmerLayout = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)
             val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.videoRecyclerView)
@@ -55,7 +51,6 @@ class VideoListFragment : Fragment() {
             }
         }
 
-        // Observe the Video Data
         videoViewModel.videos.observe(viewLifecycleOwner) { videoList ->
             videoAdapter.submitList(videoList)
         }
@@ -64,7 +59,6 @@ class VideoListFragment : Fragment() {
     private fun setupRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.videoRecyclerView)
 
-        // Use the PlayerViewModel to select the video
         videoAdapter = VideoAdapter { video ->
             playerViewModel.selectVideo(video)
         }

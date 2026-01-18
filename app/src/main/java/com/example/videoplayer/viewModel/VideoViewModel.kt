@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class VideoViewModel : ViewModel() {
 
-    // 1. Explicitly initialize the repository
     private val repository = VideoRepository()
 
     private val _videos = MutableLiveData<List<Video>>()
@@ -42,13 +41,9 @@ class VideoViewModel : ViewModel() {
 
             val result = repository.fetchVideos(category)
 
-            // 2. We explicitly define the type (videoList: List<Video>)
-            // to fix the "Cannot infer type" and "Ambiguity" errors.
             result.onSuccess { videoList: List<Video> ->
-                // This will print the number of videos received to the console
                 Log.d("API_RESPONSE", "Successfully fetched ${videoList.size} videos for category: $category")
 
-                // This will print each video title
                 videoList.forEach { video ->
                     Log.d("API_RESPONSE", "Video: ${video.title}")
                 }

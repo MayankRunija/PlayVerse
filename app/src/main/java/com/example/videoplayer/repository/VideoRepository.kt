@@ -10,15 +10,13 @@ class VideoRepository {
             try {
                 val response = apiService.getVideosByCategory(query = category)
 
-                // Convert YouTube models to your UI Video model
                 val mappedVideos = response.items.map { item ->
                     Video(
                         type = "video",
                         videoId = item.id.videoId,
                         title = item.snippet.title,
                         author = item.snippet.channelTitle,
-                        viewCountText = "Live", // Search API doesn't give views; needs a second call
-                        publishedText = item.snippet.publishedAt.substring(0, 10),
+                        publishedText = item.snippet.publishedAt.take(10),
                         thumbnailUrl = item.snippet.thumbnails.high.url
                     )
                 }

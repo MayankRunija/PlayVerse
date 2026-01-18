@@ -16,7 +16,6 @@ import com.example.videoplayer.viewmodel.PlayerViewModel
 class MainActivity : AppCompatActivity() {
 
     private val videoViewModel: VideoViewModel by viewModels()
-    // New Player ViewModel for state management
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var detailSheet: VideoDetailSheet
@@ -26,10 +25,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize the new Detail Sheet UI logic
-        // This replaces the old playerSheetController
-        // Inside MainActivity.kt onCreate
-        // Inside MainActivity onCreate
         val bottomSheetView = findViewById<View>(R.id.bottomSheetInclude)
         detailSheet = VideoDetailSheet(
             sheetView = bottomSheetView,
@@ -60,11 +55,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    // Removed openVideoPlayer(video)
-    // Your VideoListFragment should now call playerViewModel.selectVideo(video) directly
-
     override fun onBackPressed() {
-        // ViewModel now handles the closing logic
         if (!playerViewModel.closePlayer()) {
             super.onBackPressed()
         }
