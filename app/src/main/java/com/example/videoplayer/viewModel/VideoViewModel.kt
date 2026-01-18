@@ -1,4 +1,4 @@
-package com.example.videoplayer.viewmodel
+package com.example.videoplayer.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

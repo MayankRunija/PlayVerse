@@ -6,4 +6,8 @@
     <style name="CircleImage">
         <item name="cornerSize">50%</item>
     </style>
+    <style name="Theme.App.SplashScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

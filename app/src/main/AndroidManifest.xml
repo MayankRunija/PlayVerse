@@ -12,14 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VideoPlayer">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" >
+        </activity>
+
+</application>
 
 </manifest>

@@ -4,21 +4,35 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videoplayer.ui.PlayerSheetController
-import com.example.videoplayer.model.Video
-import com.example.videoplayer.viewmodel.VideoViewModel
+import androidx.core.graphics.toColorInt
+import com.example.videoplayer.adapter.CategoryAdapter
+import com.example.videoplayer.ui.VideoListFragment
+import com.example.videoplayer.ui.VideoDetailSheet
+import com.example.videoplayer.viewModel.VideoViewModel
+import com.example.videoplayer.viewmodel.PlayerViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: VideoViewModel by viewModels()
-    private lateinit var playerSheetController: PlayerSheetController
+    // Main data ViewModel
+    private val videoViewModel: VideoViewModel by viewModels()
+    // New Player ViewModel for state management
+    private val playerViewModel: PlayerViewModel by viewModels()
+
+    private lateinit var detailSheet: VideoDetailSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.statusBarColor = "#0F0F0F".toColorInt()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize UI components
-        playerSheetController = PlayerSheetController(findViewById(android.R.id.content))
+        // Initialize the new Detail Sheet UI logic
+        // This replaces the old playerSheetController
+        detailSheet = VideoDetailSheet(
+            root = findViewById(android.R.id.content),
+            viewModel = playerViewModel,
+            lifecycleOwner = this
+        )
+
         setupCategoryBar()
 
         if (savedInstanceState == null) {
@@ -28,9 +42,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupCategoryBar() {
         val rv = findViewById<RecyclerView>(R.id.categoryRecyclerView)
-        val adapter = CategoryAdapter { category -> loadCategoryFragment(category.name) }
+        val adapter = CategoryAdapter { category ->
+            loadCategoryFragment(category.name)
+        }
         rv.adapter = adapter
-        adapter.submitList(viewModel.getCategories())
+        adapter.submitList(videoViewModel.getCategories())
     }
 
     private fun loadCategoryFragment(name: String) {
@@ -40,12 +56,12 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    fun openVideoPlayer(video: Video) {
-        playerSheetController.openVideo(video)
-    }
+    // Removed openVideoPlayer(video)
+    // Your VideoListFragment should now call playerViewModel.selectVideo(video) directly
 
     override fun onBackPressed() {
-        if (!playerSheetController.handleBackPress()) {
+        // ViewModel now handles the closing logic
+        if (!playerViewModel.closePlayer()) {
             super.onBackPressed()
         }
     }

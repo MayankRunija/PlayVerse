@@ -1,4 +1,4 @@
-package com.example.videoplayer
+package com.example.videoplayer.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.videoplayer.R
 import com.example.videoplayer.model.Category
 import com.google.android.material.card.MaterialCardView
 

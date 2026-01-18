@@ -1,4 +1,4 @@
-package com.example.videoplayer
+package com.example.videoplayer.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,13 +9,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videoplayer.viewmodel.VideoViewModel
+import com.example.videoplayer.R
+import com.example.videoplayer.adapter.VideoAdapter
+import com.example.videoplayer.viewModel.VideoViewModel
+import com.example.videoplayer.viewmodel.PlayerViewModel
 
 class VideoListFragment : Fragment() {
 
     private lateinit var videoAdapter: VideoAdapter
-    // Shared ViewModel with Activity ensures data persistence during fragment swaps
-    private val viewModel: VideoViewModel by activityViewModels()
+
+    // Shared Data ViewModel (for the list)
+    private val videoViewModel: VideoViewModel by activityViewModels()
+
+    // Shared Player ViewModel (to trigger the bottom sheet)
+    private val playerViewModel: PlayerViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,28 +39,27 @@ class VideoListFragment : Fragment() {
 
         setupRecyclerView(view)
 
-        // 1. Get the category name passed from the Bundle
         val category = arguments?.getString("ARG_CATEGORY") ?: "All"
+        videoViewModel.fetchVideosByCategory(category)
 
-        // 2. TRIGGER THE DATA FETCH (This removes your "never used" warning)
-        viewModel.fetchVideosByCategory(category)
-
-        // 3. Observe the Loading State for the loader
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        // Observe the Loading State
+        videoViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             loadingBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
         }
 
-        // 4. Observe the Video Data
-        viewModel.videos.observe(viewLifecycleOwner) { videoList ->
+        // Observe the Video Data
+        videoViewModel.videos.observe(viewLifecycleOwner) { videoList ->
             videoAdapter.submitList(videoList)
         }
     }
 
     private fun setupRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.videoRecyclerView)
+
+        // Use the PlayerViewModel to select the video
         videoAdapter = VideoAdapter { video ->
-            (activity as? MainActivity)?.openVideoPlayer(video)
+            playerViewModel.selectVideo(video)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

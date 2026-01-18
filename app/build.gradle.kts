@@ -47,4 +47,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("androidx.fragment:fragment-ktx:1.8.9")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")}
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("com.airbnb.android:lottie:6.1.0")
+}

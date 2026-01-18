@@ -1,4 +1,4 @@
-package com.example.videoplayer
+package com.example.videoplayer.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.videoplayer.R
 import com.example.videoplayer.model.Video
 
 class VideoAdapter(private val onVideoClick: (Video) -> Unit) :
