@@ -48,6 +48,7 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include layout="@layout/layout_video_bottom_sheet" />
-
+    <include
+        android:id="@+id/bottomSheetInclude"
+        layout="@layout/layout_video_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

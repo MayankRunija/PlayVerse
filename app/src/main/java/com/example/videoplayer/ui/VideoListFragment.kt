@@ -34,9 +34,6 @@ class VideoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val loadingBar = view.findViewById<ProgressBar>(R.id.loadingBar)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.videoRecyclerView)
-
         setupRecyclerView(view)
 
         val category = arguments?.getString("ARG_CATEGORY") ?: "All"
@@ -44,8 +41,18 @@ class VideoListFragment : Fragment() {
 
         // Observe the Loading State
         videoViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            loadingBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+            val shimmerLayout = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)
+            val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.videoRecyclerView)
+
+            if (isLoading) {
+                shimmerLayout.visibility = View.VISIBLE
+                shimmerLayout.startShimmer()
+                recyclerView.visibility = View.GONE
+            } else {
+                shimmerLayout.stopShimmer()
+                shimmerLayout.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+            }
         }
 
         // Observe the Video Data

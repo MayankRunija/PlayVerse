@@ -9,4 +9,5 @@
     <color name="button_gradient_end">#D4AF37</color>
     <color name="app_background">#0F0F0F</color>
     <color name="button_text_white">#FFFFFF</color>
+    <color name="midnight_black">#0F0F0F</color>
 </resources>

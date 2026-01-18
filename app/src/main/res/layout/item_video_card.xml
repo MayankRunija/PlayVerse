@@ -5,29 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
+    android:paddingBottom="8dp"
     android:background="#0F0F0F">
 
     <com.google.android.material.imageview.ShapeableImageView
-    android:id="@+id/videoThumbnail"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:scaleType="centerCrop"
-    android:background="#1A1A1A"
-    app:shapeAppearanceOverlay="@style/RoundedCorners"
-    app:layout_constraintDimensionRatio="16:9"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/videoThumbnail"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:background="#1A1A1A"
+        app:shapeAppearanceOverlay="@style/RoundedCorners"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/channelAvatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginTop="12dp"
         android:layout_marginStart="12dp"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@drawable/ic_launcher_foreground"
         app:shapeAppearanceOverlay="@style/CircleImage"
-        app:strokeColor="#F2C970"
+        app:strokeColor="#33F2C970"
         app:strokeWidth="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/videoThumbnail" />
@@ -40,9 +41,9 @@
         android:layout_marginEnd="12dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:text="Modern Video Title"
+        android:text="Loading title..."
         android:textColor="#F2C970"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:fontFamily="sans-serif-black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/channelAvatar"
@@ -53,12 +54,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:text="Channel Name • 1.2M views • 2 hours ago"
+        android:text="Channel • Views • Date"
         android:textColor="#B3F2C970"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:fontFamily="sans-serif-light"
         app:layout_constraintEnd_toEndOf="@id/videoTitle"
         app:layout_constraintStart_toStartOf="@id/videoTitle"
-        app:layout_constraintTop_toBottomOf="@id/videoTitle" />
-
+        app:layout_constraintTop_toBottomOf="@id/videoTitle"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

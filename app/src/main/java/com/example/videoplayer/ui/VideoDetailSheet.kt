@@ -2,66 +2,91 @@ package com.example.videoplayer.ui
 
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import com.example.videoplayer.R
+import com.example.videoplayer.model.Video
 import com.example.videoplayer.viewmodel.PlayerViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 class VideoDetailSheet(
-    private val root: View,
+    private val sheetView: View, // This is the 'bottomSheetInclude' from MainActivity
     private val viewModel: PlayerViewModel,
-    private val lifecycleOwner: LifecycleOwner
+    lifecycleOwner: LifecycleOwner
 ) {
-    // 1. Initialize Views from the included layout
-    private val bottomSheet: ConstraintLayout = root.findViewById(R.id.bottomSheetRoot)
-    private val behavior: BottomSheetBehavior<ConstraintLayout> = BottomSheetBehavior.from(bottomSheet)
+    private val behavior = BottomSheetBehavior.from(sheetView)
 
-    private val title: TextView = root.findViewById(R.id.sheetVideoTitle)
-    private val desc: TextView = root.findViewById(R.id.sheetVideoDesc)
-    private val channelName: TextView = root.findViewById(R.id.sheetChannelName)
-    private val subscribeBtn: AppCompatButton = root.findViewById(R.id.subscribeButton)
-
+    // Use sheetView.findViewById to ensure we are looking inside the sheet!
+    private val titleView: TextView = sheetView.findViewById(R.id.sheetVideoTitle)
+    private val descView: TextView = sheetView.findViewById(R.id.sheetVideoDesc)
+    private val channelNameView: TextView = sheetView.findViewById(R.id.sheetChannelName)
+    private val youtubePlayerView: YouTubePlayerView = sheetView.findViewById(R.id.youtube_player_view)
+    private var activePlayer: YouTubePlayer? = null
     init {
-        setupObservers()
-        setupListeners()
-    }
+        // Essential: Keeps player in sync with Activity/Fragment lifecycle
+        lifecycleOwner.lifecycle.addObserver(youtubePlayerView)
 
-    private fun setupObservers() {
-        // 2. Watch for Video Changes
         viewModel.selectedVideo.observe(lifecycleOwner) { video ->
             video?.let {
-                title.text = it.title
-                desc.text = "${it.views} views"
-                channelName.text = it.channelName
-                // You could also load the channel avatar here using Glide
+                bindVideoData(it)
+                loadYouTubeVideo(it.videoId)
             }
         }
 
-        // 3. Watch for Visibility Changes (The "Eye-Catchy" slide)
-        viewModel.isSheetVisible.observe(lifecycleOwner) { isVisible ->
-            behavior.state = if (isVisible) {
+        viewModel.isPlayerExpanded.observe(lifecycleOwner) { isExpanded ->
+            behavior.state = if (isExpanded) {
                 BottomSheetBehavior.STATE_EXPANDED
             } else {
+                activePlayer?.pause() // Stop audio when hidden
                 BottomSheetBehavior.STATE_HIDDEN
             }
         }
-    }
 
-    private fun setupListeners() {
-        // Sync behavior with ViewModel if user drags it down manually
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    viewModel.closePlayer()
+                    viewModel.setExpanded(false)
+                    activePlayer?.pause()
                 }
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
+    }
 
-        subscribeBtn.setOnClickListener {
-            // Handle subscribe logic
+    private fun bindVideoData(video: Video) {
+        titleView.text = video.title
+        descView.text = "${video.viewCountText} • ${video.publishedText}"
+        channelNameView.text = video.author
+    }
+
+    private fun loadYouTubeVideo(videoId: String) {
+        if (activePlayer != null) {
+            activePlayer?.loadVideo(videoId, 0f)
+        } else {
+            val options = IFramePlayerOptions.Builder()
+                .controls(1)
+                .fullscreen(0)
+                // Add these two to help bypass some embedding restrictions
+                .rel(0) // Don't show related videos from other channels
+                .ivLoadPolicy(3) // Hide video annotations
+                .build()
+
+            youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    activePlayer = youTubePlayer
+                    youTubePlayer.loadVideo(videoId, 0f)
+                }
+
+                override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                    if (error == PlayerConstants.PlayerError.VIDEO_NOT_PLAYABLE_IN_EMBEDDED_PLAYER) {
+                        titleView.text = "Playback Restricted by YouTube"
+                    }
+                }
+            }, options)
         }
     }
 }

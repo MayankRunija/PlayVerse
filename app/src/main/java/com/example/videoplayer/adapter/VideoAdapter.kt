@@ -1,5 +1,6 @@
 package com.example.videoplayer.adapter
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.videoplayer.R
 import com.example.videoplayer.model.Video
 
@@ -16,7 +19,7 @@ class VideoAdapter(private val onVideoClick: (Video) -> Unit) :
     private var videos = listOf<Video>()
 
     fun submitList(list: List<Video>) {
-        videos = list
+        this.videos = list
         notifyDataSetChanged()
     }
 
@@ -27,12 +30,15 @@ class VideoAdapter(private val onVideoClick: (Video) -> Unit) :
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val video = videos[position]
-        Log.d("VideoApp", "Binding video at position: $position")
         holder.title.text = video.title
-        holder.meta.text = "${video.channelName} • ${video.views} views • ${video.timeAgo}"
+        holder.meta.text = "${video.author} • ${video.viewCountText} • ${video.publishedText}"
 
-        // In a real app, use Glide or Coil to load images
-        // holder.thumbnail.setImageResource(video.thumbnailResId)
+        // FIX: Use video.thumbnailUrl directly
+        Glide.with(holder.itemView.context)
+            .load(video.thumbnailUrl)
+            .placeholder(Color.BLACK)
+            .centerCrop()
+            .into(holder.thumbnail)
 
         holder.itemView.setOnClickListener { onVideoClick(video) }
     }

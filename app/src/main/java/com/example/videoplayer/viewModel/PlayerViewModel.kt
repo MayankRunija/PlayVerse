@@ -7,24 +7,32 @@ import com.example.videoplayer.model.Video
 
 class PlayerViewModel : ViewModel() {
 
-    // The current video being played
     private val _selectedVideo = MutableLiveData<Video?>()
     val selectedVideo: LiveData<Video?> = _selectedVideo
 
-    // State of the player (Expanded, Hidden, etc.)
-    private val _isSheetVisible = MutableLiveData<Boolean>(false)
-    val isSheetVisible: LiveData<Boolean> = _isSheetVisible
+    // Track the visual state of the player sheet
+    private val _isPlayerExpanded = MutableLiveData<Boolean>(false)
+    val isPlayerExpanded: LiveData<Boolean> = _isPlayerExpanded
 
     fun selectVideo(video: Video) {
         _selectedVideo.value = video
-        _isSheetVisible.value = true
+        _isPlayerExpanded.value = true
     }
 
     fun closePlayer(): Boolean {
-        if (_isSheetVisible.value == true) {
-            _isSheetVisible.value = false
-            return true
+        // If the player is currently open, close it and return true to consume back press
+        return if (_isPlayerExpanded.value == true) {
+            _isPlayerExpanded.value = false
+            // Optional: clear video data after the slide-down animation completes
+            true
+        } else {
+            false
         }
-        return false
+    }
+
+    // Call this when the user manually drags the sheet down to hide it
+    fun setExpanded(expanded: Boolean) {
+        _isPlayerExpanded.value = expanded
+        if (!expanded) _selectedVideo.value = null
     }
 }

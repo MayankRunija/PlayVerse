@@ -1,6 +1,7 @@
 package com.example.videoplayer
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -11,9 +12,9 @@ import com.example.videoplayer.ui.VideoDetailSheet
 import com.example.videoplayer.viewModel.VideoViewModel
 import com.example.videoplayer.viewmodel.PlayerViewModel
 
+
 class MainActivity : AppCompatActivity() {
 
-    // Main data ViewModel
     private val videoViewModel: VideoViewModel by viewModels()
     // New Player ViewModel for state management
     private val playerViewModel: PlayerViewModel by viewModels()
@@ -27,8 +28,11 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize the new Detail Sheet UI logic
         // This replaces the old playerSheetController
+        // Inside MainActivity.kt onCreate
+        // Inside MainActivity onCreate
+        val bottomSheetView = findViewById<View>(R.id.bottomSheetInclude)
         detailSheet = VideoDetailSheet(
-            root = findViewById(android.R.id.content),
+            sheetView = bottomSheetView,
             viewModel = playerViewModel,
             lifecycleOwner = this
         )
